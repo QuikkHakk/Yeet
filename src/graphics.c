@@ -217,4 +217,5 @@ void model_render(Model *m) {
 void model_free(Model *m) {
 	texture_free(m->texture);
 	vao_free(m->vao);
+	free(m);
 }

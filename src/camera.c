@@ -17,13 +17,13 @@ static void mouse_callback(GLFWwindow *window, double xpos, double ypos);
 
 const float CAMERA_FACTOR = 5, SENSITIVITY = 0.05f;
 static vec3 front, up;
-static float yaw = -90.0, pitch;
+static float yaw = 90.0, pitch;
 static float last_mx, last_my;
 static int mouse_init = 1;
 
 Camera *camera_new(Window *w) {
 	Camera *c = xmalloc(sizeof(Camera));
-	glm_vec3_copy((vec3){0.0, 0.0, 3.0}, c->position);
+	glm_vec3_copy((vec3){0.0, 4.0, -10.0}, c->position);
 	glm_vec3_copy((vec3){0.0, 0.0, -1.0}, front);
 	glm_vec3_copy(GLM_YUP, up);
 	glm_mat4_identity(c->view_matrix);

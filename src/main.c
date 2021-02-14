@@ -9,6 +9,7 @@
 #include "camera.h"
 #include "graphics.h"
 #include "shader.h"
+#include "terrain.h"
 
 const float FOV = 90;
 const float FAR = 100;
@@ -19,6 +20,7 @@ int main() {
 	Window* window = window_new("Yeet Test", WIDTH, HEIGHT);
 	Shader *shader = shader_new("shader/base_vertex.glsl", "shader/base_fragment.glsl");
 	Model *model = model_load("resources/stall.obj", "resources/stall.png");
+	Terrain *terrain = terrain_generated();
 	Camera *camera = camera_new(window);
 	mat4 proj_mat, model_mat;
 	float last_time = 0.0, delta = 0.0;
@@ -44,8 +46,9 @@ int main() {
 
 		camera_update(camera, window, delta);
 
+		terrain_render(terrain, proj_mat, camera->view_matrix);
+
 		glm_mat4_identity(model_mat);
-		glm_translate(model_mat, (vec3){0.0, -3, 0.0});
 
 		shader_enable(shader);
 		shader_load_mat4(shader, "proj_mat", proj_mat);
@@ -62,6 +65,7 @@ int main() {
 
 	shader_free(shader);
 	model_free(model);
+	terrain_free(terrain);
 
 	return EXIT_SUCCESS;
 }

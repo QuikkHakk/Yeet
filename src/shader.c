@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include <cglm/cglm.h>
 #include <GL/glew.h>
 
 #include "shader.h"
@@ -39,6 +40,11 @@ void shader_enable(Shader *s) {
 
 void shader_disable(Shader *s) {
 	glUseProgram(0);
+}
+
+void shader_load_mat4(Shader *s, const char *uniform_name, mat4 mat) {
+	GLuint location = glGetUniformLocation(s->id, uniform_name);
+	glUniformMatrix4fv(location, 1, GL_FALSE, (float *)mat);
 }
 
 void shader_free(Shader *s) {

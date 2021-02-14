@@ -1,3 +1,4 @@
+#include <math.h>
 #include <stddef.h>
 
 #include <cglm/cglm.h>
@@ -12,15 +13,24 @@
 #define KEY_S 83
 #define KEY_W 87
 
-const float CAMERA_FACTOR = 5;
-static vec3 front, up;
+static void mouse_callback(GLFWwindow *window, double xpos, double ypos);
 
-Camera *camera_new() {
+const float CAMERA_FACTOR = 5, SENSITIVITY = 0.05f;
+static vec3 front, up;
+static float yaw = -90.0, pitch;
+static float last_mx, last_my;
+static int mouse_init = 1;
+
+Camera *camera_new(Window *w) {
 	Camera *c = xmalloc(sizeof(Camera));
 	glm_vec3_copy((vec3){0.0, 0.0, 3.0}, c->position);
 	glm_vec3_copy((vec3){0.0, 0.0, -1.0}, front);
 	glm_vec3_copy(GLM_YUP, up);
 	glm_mat4_identity(c->view_matrix);
+
+	glfwSetInputMode(w->handle, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+	glfwSetCursorPosCallback(w->handle, mouse_callback);
+
 	return c;
 }
 
@@ -56,4 +66,35 @@ void camera_update(Camera *c, Window *w, float delta) {
 		glm_vec3_scale(cross, camera_speed, addition);
 		glm_vec3_add(c->position, addition, c->position);
 	}
+}
+
+static void mouse_callback(GLFWwindow *window, double xpos, double ypos) {
+	if (mouse_init) {
+		mouse_init = 0;
+		last_mx = xpos;
+		last_my = ypos;
+	}
+
+	float xoffset = xpos - last_mx;
+    float yoffset = last_my - ypos; 
+    last_mx = xpos;
+    last_my = ypos;
+
+    xoffset *= SENSITIVITY;
+    yoffset *= SENSITIVITY;
+
+    yaw += xoffset;
+    pitch += yoffset;
+
+    if(pitch > 89.0f) {
+        pitch = 89.0f;
+	}
+    if(pitch < -89.0f) {
+        pitch = -89.0f;
+	}
+
+	front[0] = cos(glm_rad(yaw)) * cos(glm_rad(pitch));
+	front[1] = sin(glm_rad(pitch));
+	front[2] = sin(glm_rad(yaw)) * cos(glm_rad(pitch));
+	glm_normalize(front);
 }

@@ -6,6 +6,7 @@ typedef struct {
 
 Window *window_new(const char *title, GLint width, GLint height);
 int window_should_close(Window *win);
+int window_key_pressed(Window *win, int key);
 void window_update_pre(Window *win);
 void window_update_post(Window *win);
 void window_close(Window *win);

@@ -5,11 +5,11 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 
+#include "window.h"
 #include "camera.h"
 #include "graphics.h"
 #include "shader.h"
 #include "vao.h"
-#include "window.h"
 
 const float FOV = 90;
 const float FAR = 100;
@@ -42,6 +42,7 @@ int main() {
 	int indices_count = 6;
 	int vi = 4;
 	mat4 proj_mat, model_mat;
+	float last_time = 0.0, delta = 0.0;
 
 	if (window == NULL) {
 		return EXIT_FAILURE;
@@ -58,9 +59,15 @@ int main() {
 	glm_perspective(FOV, WIDTH / HEIGHT, NEAR, FAR, proj_mat);
 
 	while (!window_should_close(window)) {
+		float time_now;
+
 		window_update_pre(window);
 		
-		camera_update(camera);
+		time_now = glfwGetTime();
+		delta = time_now - last_time;
+		last_time = time_now;
+
+		camera_update(camera, window, delta);
 
 		glm_mat4_identity(model_mat);
 		glm_rotate(model_mat, glfwGetTime(), (vec3){0.0, 1.0, 0.0});

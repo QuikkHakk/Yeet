@@ -47,6 +47,10 @@ Window *window_new(const char *title, GLint width, GLint height) {
   return win;
 }
 
+int window_key_pressed(Window *win, int key) {
+    return glfwGetKey(win->handle, key) == GLFW_PRESS;
+}
+
 int window_should_close(Window *win) {
     return glfwWindowShouldClose(win->handle);
 }

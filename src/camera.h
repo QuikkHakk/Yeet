@@ -1,8 +1,7 @@
 typedef struct {
-	mat4 view_matrix;
 	vec3 position;
-	vec3 target;
+	mat4 view_matrix;
 } Camera;
 
 Camera *camera_new();
-void camera_update(Camera *c);
+void camera_update(Camera *c, Window *w, float delta);

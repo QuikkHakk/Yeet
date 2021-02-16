@@ -24,6 +24,7 @@ int main() {
 	Camera *camera = camera_new(window);
 	mat4 proj_mat, model_mat;
 	float last_time = 0.0, delta = 0.0;
+	vec3 light_pos = {0.0, 100.0, 0.0};
 
 	if (window == NULL) {
 		return EXIT_FAILURE;
@@ -54,6 +55,8 @@ int main() {
 		shader_load_mat4(shader, "proj_mat", proj_mat);
 		shader_load_mat4(shader, "view_mat", camera->view_matrix);
 		shader_load_mat4(shader, "model_mat", model_mat);
+
+		shader_load_vec3(shader, "ulight_pos", light_pos);
 
 		model_render(model);
 

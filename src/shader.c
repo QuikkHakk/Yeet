@@ -42,6 +42,21 @@ void shader_disable(Shader *s) {
 	glUseProgram(0);
 }
 
+void shader_load_float(Shader *s, const char *uniform_name, float v) {
+	GLuint location = glGetUniformLocation(s->id, uniform_name);
+	glUniform1f(location, v);
+}
+
+void shader_load_vec3(Shader *s, const char *uniform_name, vec3 vec) {
+	GLuint location = glGetUniformLocation(s->id, uniform_name);
+	glUniform3fv(location, 1, vec);
+}
+
+void shader_load_vec4(Shader *s, const char *uniform_name, vec4 vec) {
+	GLuint location = glGetUniformLocation(s->id, uniform_name);
+	glUniform4fv(location, 1, vec);
+}
+
 void shader_load_mat4(Shader *s, const char *uniform_name, mat4 mat) {
 	GLuint location = glGetUniformLocation(s->id, uniform_name);
 	glUniformMatrix4fv(location, 1, GL_FALSE, (float *)mat);

@@ -84,6 +84,15 @@ void vao_texture_buffer(VAO *vao, UV texture_coords[], int txc_count) {
 	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, 0);
 }
 
+void vao_normals_buffer(VAO *vao, Vertex normals[], int normals_count) {
+	glGenBuffers(1, &vao->normals_buffer);
+	glBindBuffer(GL_ARRAY_BUFFER, vao->normals_buffer);
+	glBufferData(GL_ARRAY_BUFFER, normals_count * sizeof(Vertex), normals, GL_STATIC_DRAW);
+
+	glEnableVertexAttribArray(2);
+	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 0, 0);
+}
+
 void vao_index_buffer(VAO *vao, unsigned int indices[], int indices_count) {
 	glGenBuffers(1, &vao->index_buffer);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vao->index_buffer);
@@ -98,6 +107,9 @@ void vao_free(VAO *vao) {
 	}
 	if (vao->texture_buffer != NULL) {
 		glDeleteBuffers(1, &vao->texture_buffer);
+	}
+	if (vao->normals_buffer != NULL) {
+		glDeleteBuffers(1, &vao->normals_buffer);
 	}
 	if (vao->index_buffer != NULL) {
 		glDeleteBuffers(1, &vao->index_buffer);
@@ -141,11 +153,17 @@ Model *model_load(const char *obj_path, const char *texture_path) {
 			sb_push(temp_vertices, vertex);
 		} else if (strcmp(line, "vt") == 0){
 			UV uv;
-			fscanf(obj_file, "%f %f\n", &uv.x, &uv.y);
+			int matches = fscanf(obj_file, "%f %f\n", &uv.x, &uv.y);
+			
+			if (matches != 2){
+				fprintf(stderr, "Failed to parse oject file '%s'!\n", obj_path);
+				exit(EXIT_FAILURE);
+			}
 			sb_push(temp_uvs, uv);
 		}else if (strcmp(line, "vn") == 0){
 			Vertex normal;
 			int matches = fscanf(obj_file, "%f %f %f\n", &normal.x, &normal.y, &normal.z);
+			
 			if (matches != 3){
 				fprintf(stderr, "Failed to parse oject file '%s'!\n", obj_path);
 				exit(EXIT_FAILURE);
@@ -154,6 +172,7 @@ Model *model_load(const char *obj_path, const char *texture_path) {
 		}else if (strcmp(line, "f") == 0 ){
 			unsigned int vertex_index[3], uv_index[3], normal_index[3];
 			int matches = fscanf(obj_file, "%d/%d/%d %d/%d/%d %d/%d/%d\n", &vertex_index[0], &uv_index[0], &normal_index[0], &vertex_index[1], &uv_index[1], &normal_index[1], &vertex_index[2], &uv_index[2], &normal_index[2]);
+			
 			if (matches != 9){
 				fprintf(stderr, "Failed to parse oject file '%s'!\n", obj_path);
 				exit(EXIT_FAILURE);
@@ -192,6 +211,7 @@ Model *model_load(const char *obj_path, const char *texture_path) {
 	vao_bind(m->vao);
 	vao_vertex_buffer(m->vao, vertices, sb_len(vertices));
 	vao_texture_buffer(m->vao, uvs, sb_len(uvs));
+	vao_normals_buffer(m->vao, normals, sb_len(normals));
 
 	sb_free(vertex_indices);
 	sb_free(uv_indices);
